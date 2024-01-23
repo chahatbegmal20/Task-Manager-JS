@@ -4,6 +4,9 @@ import Task from "./task.js"; //Destructuring hatane ke liye we can do is export
 export const taskOperations = {
   // ek object banaya hai taskOperations naam ka jisme array of objects pade hai(tasks:[]) aur ek function banaya hai jiski key aur value dono ek hai i.e add.
   tasks: [],
+  getAllTask(){
+    return this.tasks;
+  },
   add(id, name, desc, date, URL) {
     const task = new Task(id, name, desc, date, URL);
     this.tasks.push(task);
@@ -37,7 +40,7 @@ export const taskOperations = {
     //   }
     // }
     // return counter;
-    return this.tasks.filter(task=>task.isMarked);
+    return this.tasks.filter(task=>task.isMarked).length;
   },
   countUnmarked() {
     return this.tasks.length - this.countMarked();
