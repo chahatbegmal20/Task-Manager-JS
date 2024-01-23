@@ -1,14 +1,44 @@
 //DOM
 import { taskOperations } from "./modules/Task_operations.js"; //Destructuring of taskoperations.
+import { showAlert } from "./utilites/dialog.js";
 
 window.addEventListener("load", init);
 
 function init() {
   showCount();
   bindEvents();
+  focus("id");
+}
+
+function save(){
+  let tasks = taskOperations.getAllTask();
+  console.log("JSON is",JSON.stringify(tasks));
+  console.log("Tasks are ",tasks);
+  if(window.localStorage){
+    localStorage.tasks = JSON.stringify(tasks);
+    showAlert("Record saved successfully....")
+  }
+  else{
+    showAlert("Browser does not support loacl storage.....");
+  }
+}
+
+function load(){
+  if(localStorage){
+    let tasks = JSON.parse(localStorage.tasks);
+    taskOperations.tasks = tasks;
+    showCount();
+    printTask(taskOperations.tasks);
+  }
+  else{
+    showAlert("Browser does not support loacl storage.....");
+  }
+
 }
 
 function bindEvents() {
+  document.querySelector("#save").addEventListener("click",save);
+  document.querySelector("#load").addEventListener("click",load);
   document.querySelector("#delete").addEventListener("click",deleteTask);
   document.querySelector("#add").addEventListener("click", addTask);
 }
@@ -61,6 +91,8 @@ function addTask() {
   const task = taskOperations.add(id, name, desc, date, URL);
   printTask(task);
   showCount();
+  clearAll();
+  focus('id');
 }
 
 function printTasks(tasks){
@@ -77,7 +109,7 @@ function printTask(task) {
   //object traversal
   let cellIndex = 0;
   for (let key in task) {
-    if (key == "isMarked") {
+    if (key == "isMarked" || typeof task[key]==="function") {      //key isliye nahi lagaya kyuki woh uska naam hai jo ki string hota yeah uss object ki value hai i.e key uska khudka custom function hai 
       continue;
     }
     let value = task[key];
@@ -89,3 +121,13 @@ function printTask(task) {
   td.appendChild(createIcon("edit", edit, id));
   td.appendChild(createIcon("trash", toggleDelete, id));
 }
+
+// function clearAll(){
+//   let textBoxes = document.querySelectorAll('.form-control');
+//   textBoxes.forEach((textBox)=>(textBox.value =""));
+// }
+
+const clearAll = () =>
+  document.querySelectorAll(".form-control").forEach((taskBox)=>(taskBox.value =""));
+
+const focus = (fieldId)=>document.querySelector('#id'+fieldId).focus();
